@@ -15,11 +15,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #8B5E3C;
-      background-image:
-        repeating-linear-gradient(92deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px),
-        repeating-linear-gradient(180deg, transparent, transparent 40px, rgba(255,255,255,0.015) 40px, rgba(255,255,255,0.015) 80px),
-        linear-gradient(175deg, #a0693f 0%, #7a4e2d 20%, #9b6035 35%, #6b4226 50%, #8c5530 65%, #7a4a2a 80%, #a06535 100%);
+      background: linear-gradient(
+        135deg,
+        hsl(calc(var(--h) + 180), 50%, 18%) 0%,
+        hsl(calc(var(--h) + 160), 45%, 12%) 50%,
+        hsl(calc(var(--h) + 200), 55%, 20%) 100%
+      );
+      transition: background 0.3s ease;
       font-family: 'Inter', sans-serif;
     }
 
@@ -283,7 +285,7 @@
             prev = parseFloat(current);
           }
           operator = op;
-          setExpr(`${fmt(prev)} ${op}`);
+          setExpr(fmt(prev) + ' ' + op);
           highlightOp(op);
           waitingForOperand = true;
           break;
@@ -293,7 +295,7 @@
           const num = parseFloat(current);
           const res = applyOp(prev, operator, num);
           if (res === null) { error(); return; }
-          setExpr(`${fmt(prev)} ${operator} ${fmt(num)} =`);
+          setExpr(fmt(prev) + ' ' + operator + ' ' + fmt(num) + ' =');
           current = fmt(res);
           prev = null; operator = null;
           justEvaled = true;
@@ -320,8 +322,8 @@
           if (fn === 'exp')  res = Math.exp(n);
           if (fn === 'inv')  res = n === 0 ? null : 1 / n;
           if (res === null || !isFinite(res)) { error(); return; }
-          const label = fn === 'sq' ? `(${fmt(n)})²` : fn === 'sqrt' ? `√(${fmt(n)})` : fn === 'exp' ? `e^(${fmt(n)})` : `1/(${fmt(n)})`;
-          setExpr(`${label} =`);
+          const label = fn === 'sq' ? '(' + fmt(n) + ')²' : fn === 'sqrt' ? '√(' + fmt(n) + ')' : fn === 'exp' ? 'e^(' + fmt(n) + ')' : '1/(' + fmt(n) + ')';
+          setExpr(label + ' =');
           current = fmt(res);
           justEvaled = true;
           waitingForOperand = false;
@@ -352,9 +354,9 @@
       e.preventDefault();
 
       if ('0123456789'.includes(k)) {
-        document.querySelector(`[data-val="${k}"]`)?.click();
+        document.querySelector('[data-val="' + k + '"]')?.click();
       } else if (['+','−','×','÷'].includes(k)) {
-        document.querySelector(`[data-op="${k}"]`)?.click();
+        document.querySelector('[data-op="' + k + '"]')?.click();
       } else if (k === '=') {
         document.querySelector('[data-action="equals"]')?.click();
       } else if (k === '.') {
