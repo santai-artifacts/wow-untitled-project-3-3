@@ -84,7 +84,7 @@
       transition: font-size 0.1s ease;
     }
 
-    .result.small { font-size: 32px; }
+    .result.small  { font-size: 32px; }
     .result.xsmall { font-size: 22px; }
 
     /* Grid */
@@ -115,6 +115,17 @@
 
     button:active { transform: scale(0.95); }
 
+    /* Scientific row */
+    .btn-sci {
+      background: #1e2535;
+      color: #a78bfa;
+      font-size: 15px;
+      font-weight: 500;
+      height: 64px;
+      letter-spacing: 0.2px;
+    }
+    .btn-sci:hover { background: #252d42; }
+
     /* Utility row (AC, +/-, %, ÷) */
     .btn-util {
       background: #2c2c35;
@@ -130,7 +141,7 @@
       font-size: 22px;
       font-weight: 500;
     }
-    .btn-op:hover { background: #6d4eed; }
+    .btn-op:hover  { background: #6d4eed; }
     .btn-op.active { background: #f0eaff; color: #5c3cde; }
 
     /* Digits */
@@ -162,8 +173,8 @@
     /* Error flash */
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-6px); }
-      75% { transform: translateX(6px); }
+      25%       { transform: translateX(-6px); }
+      75%       { transform: translateX(6px); }
     }
     .shake { animation: shake 0.25s ease; }
   </style>
@@ -175,6 +186,11 @@
       <div class="result" id="result">0</div>
     </div>
     <div class="keys">
+      <!-- Scientific row -->
+      <button class="btn-sci" data-action="sci" data-fn="sq">x²</button>
+      <button class="btn-sci" data-action="sci" data-fn="sqrt">√x</button>
+      <button class="btn-sci" data-action="sci" data-fn="exp">eˣ</button>
+      <button class="btn-sci" data-action="sci" data-fn="inv">¹/x</button>
       <!-- Row 1 -->
       <button class="btn-util" data-action="clear">AC</button>
       <button class="btn-util" data-action="sign">+/−</button>
@@ -206,11 +222,11 @@
     const resultEl = document.getElementById('result');
     const exprEl   = document.getElementById('expression');
 
-    let current          = '0';   // what's shown
-    let prev             = null;  // previous operand
-    let operator         = null;  // pending operator
-    let justEvaled       = false; // true after = (next digit starts fresh)
-    let waitingForOperand = false; // true after op (next digit replaces display, keeps prev/operator)
+    let current           = '0';
+    let prev              = null;
+    let operator          = null;
+    let justEvaled        = false;
+    let waitingForOperand = false;
 
     function fmt(n) {
       const s = parseFloat(n.toPrecision(10)).toString();
@@ -318,6 +334,22 @@
         case 'percent': {
           const n = parseFloat(current);
           current = fmt(n / 100);
+          break;
+        }
+        case 'sci': {
+          const n = parseFloat(current);
+          const fn = btn.dataset.fn;
+          let res;
+          if (fn === 'sq')   res = n * n;
+          if (fn === 'sqrt') res = n < 0 ? null : Math.sqrt(n);
+          if (fn === 'exp')  res = Math.exp(n);
+          if (fn === 'inv')  res = n === 0 ? null : 1 / n;
+          if (res === null || !isFinite(res)) { error(); return; }
+          const label = fn === 'sq' ? `(${fmt(n)})²` : fn === 'sqrt' ? `√(${fmt(n)})` : fn === 'exp' ? `e^(${fmt(n)})` : `1/(${fmt(n)})`;
+          setExpr(`${label} =`);
+          current = fmt(res);
+          justEvaled = true;
+          waitingForOperand = false;
           break;
         }
         case 'clear': {
