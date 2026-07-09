@@ -26,10 +26,11 @@
     .calc {
       width: 340px;
       border-radius: 28px;
-      background: #1a1a1f;
+      background: hsl(var(--h), 10%, 10%);
       box-shadow: 0 40px 80px rgba(0,0,0,0.55), 0 8px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.06);
       overflow: hidden;
       user-select: none;
+      transition: background 0.3s ease;
     }
 
     .display {
@@ -71,7 +72,8 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 1px;
-      background: rgba(255,255,255,0.05);
+      background: hsl(var(--h), 20%, 6%);
+      transition: background 0.3s ease;
     }
 
     button {
@@ -102,11 +104,11 @@
     .btn-sci:hover { background: hsl(var(--h), 60%, 17%); }
 
     .btn-util {
-      background: #2c2c35;
+      background: hsl(var(--h), 15%, 20%);
       color: rgba(255,255,255,0.75);
       font-size: 18px;
     }
-    .btn-util:hover { background: #38383f; }
+    .btn-util:hover { background: hsl(var(--h), 15%, 26%); }
 
     .btn-op {
       background: hsl(var(--h), 65%, 45%);
@@ -118,10 +120,10 @@
     .btn-op.active { background: hsl(var(--h), 90%, 92%); color: hsl(var(--h), 65%, 38%); }
 
     .btn-digit {
-      background: #22222a;
+      background: hsl(var(--h), 10%, 14%);
       color: #fff;
     }
-    .btn-digit:hover { background: #2a2a35; }
+    .btn-digit:hover { background: hsl(var(--h), 10%, 18%); }
 
     .btn-zero {
       grid-column: span 2;
@@ -338,7 +340,6 @@
       recolor();
     });
 
-    // Keyboard support
     document.addEventListener('keydown', e => {
       const map = {
         '0':'0','1':'1','2':'2','3':'3','4':'4',
