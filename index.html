@@ -6,6 +6,8 @@
   <title>Calculator</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
+    :root { --h: 258; }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -15,30 +17,9 @@
       justify-content: center;
       background-color: #8B5E3C;
       background-image:
-        repeating-linear-gradient(
-          92deg,
-          transparent,
-          transparent 2px,
-          rgba(0,0,0,0.03) 2px,
-          rgba(0,0,0,0.03) 4px
-        ),
-        repeating-linear-gradient(
-          180deg,
-          transparent,
-          transparent 40px,
-          rgba(255,255,255,0.015) 40px,
-          rgba(255,255,255,0.015) 80px
-        ),
-        linear-gradient(
-          175deg,
-          #a0693f 0%,
-          #7a4e2d 20%,
-          #9b6035 35%,
-          #6b4226 50%,
-          #8c5530 65%,
-          #7a4a2a 80%,
-          #a06535 100%
-        );
+        repeating-linear-gradient(92deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px),
+        repeating-linear-gradient(180deg, transparent, transparent 40px, rgba(255,255,255,0.015) 40px, rgba(255,255,255,0.015) 80px),
+        linear-gradient(175deg, #a0693f 0%, #7a4e2d 20%, #9b6035 35%, #6b4226 50%, #8c5530 65%, #7a4a2a 80%, #a06535 100%);
       font-family: 'Inter', sans-serif;
     }
 
@@ -51,7 +32,6 @@
       user-select: none;
     }
 
-    /* Display */
     .display {
       padding: 28px 28px 20px;
       text-align: right;
@@ -87,7 +67,6 @@
     .result.small  { font-size: 32px; }
     .result.xsmall { font-size: 22px; }
 
-    /* Grid */
     .keys {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -95,7 +74,6 @@
       background: rgba(255,255,255,0.05);
     }
 
-    /* Buttons */
     button {
       border: none;
       cursor: pointer;
@@ -107,26 +85,22 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.08s ease, transform 0.06s ease;
+      transition: background 0.3s ease, color 0.3s ease, transform 0.06s ease;
       -webkit-tap-highlight-color: transparent;
       outline: none;
-      position: relative;
     }
 
     button:active { transform: scale(0.95); }
 
-    /* Scientific row */
     .btn-sci {
-      background: #1e2535;
-      color: #a78bfa;
+      background: hsl(var(--h), 60%, 12%);
+      color: hsl(var(--h), 80%, 75%);
       font-size: 15px;
       font-weight: 500;
       height: 64px;
-      letter-spacing: 0.2px;
     }
-    .btn-sci:hover { background: #252d42; }
+    .btn-sci:hover { background: hsl(var(--h), 60%, 17%); }
 
-    /* Utility row (AC, +/-, %, ÷) */
     .btn-util {
       background: #2c2c35;
       color: rgba(255,255,255,0.75);
@@ -134,24 +108,21 @@
     }
     .btn-util:hover { background: #38383f; }
 
-    /* Operators */
     .btn-op {
-      background: #5c3cde;
+      background: hsl(var(--h), 65%, 45%);
       color: #fff;
       font-size: 22px;
       font-weight: 500;
     }
-    .btn-op:hover  { background: #6d4eed; }
-    .btn-op.active { background: #f0eaff; color: #5c3cde; }
+    .btn-op:hover  { background: hsl(var(--h), 65%, 55%); }
+    .btn-op.active { background: hsl(var(--h), 90%, 92%); color: hsl(var(--h), 65%, 38%); }
 
-    /* Digits */
     .btn-digit {
       background: #22222a;
       color: #fff;
     }
     .btn-digit:hover { background: #2a2a35; }
 
-    /* Zero spans 2 columns */
     .btn-zero {
       grid-column: span 2;
       justify-content: flex-start;
@@ -159,18 +130,15 @@
       font-size: 20px;
     }
 
-    /* Equals */
     .btn-eq {
-      background: #7c5ef0;
+      background: hsl(var(--h), 70%, 52%);
       color: #fff;
       font-size: 28px;
     }
-    .btn-eq:hover { background: #8d6ef7; }
+    .btn-eq:hover { background: hsl(var(--h), 70%, 62%); }
 
-    /* Decimal */
     .btn-dot { color: rgba(255,255,255,0.8); }
 
-    /* Error flash */
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       25%       { transform: translateX(-6px); }
@@ -241,6 +209,11 @@
     }
 
     function setExpr(str) { exprEl.textContent = str; }
+
+    function recolor() {
+      const hue = Math.floor(Math.random() * 360);
+      document.documentElement.style.setProperty('--h', hue);
+    }
 
     function highlightOp(op) {
       document.querySelectorAll('.btn-op').forEach(b => {
@@ -362,6 +335,7 @@
       }
 
       render();
+      recolor();
     });
 
     // Keyboard support
@@ -390,6 +364,7 @@
         if (current === 'Error' || justEvaled || waitingForOperand) return;
         current = current.length > 1 ? current.slice(0,-1) : '0';
         render();
+        recolor();
       } else if (k === '%') {
         document.querySelector('[data-action="percent"]')?.click();
       }
