@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0f0f11;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .calc {
+      width: 340px;
+      border-radius: 28px;
+      background: #1a1a1f;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* Display */
+    .display {
+      padding: 28px 28px 20px;
+      text-align: right;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    .expression {
+      font-size: 14px;
+      color: rgba(255,255,255,0.35);
+      min-height: 20px;
+      letter-spacing: 0.3px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .result {
+      font-size: 48px;
+      font-weight: 300;
+      color: #fff;
+      line-height: 1;
+      letter-spacing: -1px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: font-size 0.1s ease;
+    }
+
+    .result.small { font-size: 32px; }
+    .result.xsmall { font-size: 22px; }
+
+    /* Grid */
+    .keys {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* Buttons */
+    button {
+      border: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 20px;
+      font-weight: 400;
+      padding: 0;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.08s ease, transform 0.06s ease;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+      position: relative;
+    }
+
+    button:active { transform: scale(0.95); }
+
+    /* Utility row (AC, +/-, %, ÷) */
+    .btn-util {
+      background: #2c2c35;
+      color: rgba(255,255,255,0.75);
+      font-size: 18px;
+    }
+    .btn-util:hover { background: #38383f; }
+
+    /* Operators */
+    .btn-op {
+      background: #5c3cde;
+      color: #fff;
+      font-size: 22px;
+      font-weight: 500;
+    }
+    .btn-op:hover { background: #6d4eed; }
+    .btn-op.active { background: #f0eaff; color: #5c3cde; }
+
+    /* Digits */
+    .btn-digit {
+      background: #22222a;
+      color: #fff;
+    }
+    .btn-digit:hover { background: #2a2a35; }
+
+    /* Zero spans 2 columns */
+    .btn-zero {
+      grid-column: span 2;
+      justify-content: flex-start;
+      padding-left: 30px;
+      font-size: 20px;
+    }
+
+    /* Equals */
+    .btn-eq {
+      background: #7c5ef0;
+      color: #fff;
+      font-size: 28px;
+    }
+    .btn-eq:hover { background: #8d6ef7; }
+
+    /* Decimal */
+    .btn-dot { color: rgba(255,255,255,0.8); }
+
+    /* Error flash */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+    .shake { animation: shake 0.25s ease; }
+  </style>
+</head>
+<body>
+  <div class="calc">
+    <div class="display">
+      <div class="expression" id="expression"></div>
+      <div class="result" id="result">0</div>
+    </div>
+    <div class="keys">
+      <!-- Row 1 -->
+      <button class="btn-util" data-action="clear">AC</button>
+      <button class="btn-util" data-action="sign">+/−</button>
+      <button class="btn-util" data-action="percent">%</button>
+      <button class="btn-op"   data-action="op" data-op="÷">÷</button>
+      <!-- Row 2 -->
+      <button class="btn-digit" data-action="digit" data-val="7">7</button>
+      <button class="btn-digit" data-action="digit" data-val="8">8</button>
+      <button class="btn-digit" data-action="digit" data-val="9">9</button>
+      <button class="btn-op"   data-action="op" data-op="×">×</button>
+      <!-- Row 3 -->
+      <button class="btn-digit" data-action="digit" data-val="4">4</button>
+      <button class="btn-digit" data-action="digit" data-val="5">5</button>
+      <button class="btn-digit" data-action="digit" data-val="6">6</button>
+      <button class="btn-op"   data-action="op" data-op="−">−</button>
+      <!-- Row 4 -->
+      <button class="btn-digit" data-action="digit" data-val="1">1</button>
+      <button class="btn-digit" data-action="digit" data-val="2">2</button>
+      <button class="btn-digit" data-action="digit" data-val="3">3</button>
+      <button class="btn-op"   data-action="op" data-op="+">+</button>
+      <!-- Row 5 -->
+      <button class="btn-digit btn-zero" data-action="digit" data-val="0">0</button>
+      <button class="btn-digit btn-dot"  data-action="dot">.</button>
+      <button class="btn-eq"             data-action="equals">=</button>
+    </div>
+  </div>
+
+  <script>
+    const resultEl = document.getElementById('result');
+    const exprEl   = document.getElementById('expression');
+
+    let current   = '0';   // what's shown
+    let prev      = null;  // previous operand
+    let operator  = null;  // pending operator
+    let justEvaled = false;
+
+    function fmt(n) {
+      const s = parseFloat(n.toPrecision(10)).toString();
+      return s.length > 12 ? parseFloat(n.toPrecision(6)).toString() : s;
+    }
+
+    function render() {
+      const len = current.replace('-','').replace('.','').length;
+      resultEl.classList.toggle('small',  len > 9);
+      resultEl.classList.toggle('xsmall', len > 13);
+      resultEl.textContent = current;
+    }
+
+    function setExpr(str) { exprEl.textContent = str; }
+
+    function highlightOp(op) {
+      document.querySelectorAll('.btn-op').forEach(b => {
+        b.classList.toggle('active', b.dataset.op === op);
+      });
+    }
+
+    function clearOps() { highlightOp(null); }
+
+    function error() {
+      current = 'Error';
+      prev = null; operator = null;
+      setExpr('');
+      clearOps();
+      render();
+      resultEl.classList.add('shake');
+      setTimeout(() => resultEl.classList.remove('shake'), 300);
+    }
+
+    function applyOp(a, op, b) {
+      switch (op) {
+        case '+': return a + b;
+        case '−': return a - b;
+        case '×': return a * b;
+        case '÷': return b === 0 ? null : a / b;
+      }
+    }
+
+    document.querySelector('.keys').addEventListener('click', e => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const { action, val, op } = btn.dataset;
+
+      if (current === 'Error' && action !== 'clear') {
+        current = '0'; justEvaled = false;
+      }
+
+      switch (action) {
+        case 'digit': {
+          if (justEvaled) { prev = null; operator = null; clearOps(); justEvaled = false; }
+          if (current === '0' || current === '-0') {
+            current = (current === '-0' ? '-' : '') + val;
+          } else {
+            if (current.replace('-','').length >= 12) break;
+            current += val;
+          }
+          break;
+        }
+        case 'dot': {
+          if (justEvaled) { current = '0'; justEvaled = false; clearOps(); }
+          if (!current.includes('.')) current += '.';
+          break;
+        }
+        case 'op': {
+          justEvaled = false;
+          const num = parseFloat(current);
+          if (prev !== null && operator) {
+            const res = applyOp(prev, operator, num);
+            if (res === null) { error(); return; }
+            prev = res;
+            current = fmt(res);
+          } else {
+            prev = num;
+          }
+          operator = op;
+          setExpr(`${fmt(prev)} ${op}`);
+          highlightOp(op);
+          current = fmt(prev);
+          justEvaled = true; // next digit should replace
+          // allow entering new number
+          justEvaled = false;
+          // actually: after choosing operator, next digit replaces display
+          justEvaled = true;
+          break;
+        }
+        case 'equals': {
+          if (operator === null || prev === null) break;
+          const num = parseFloat(current);
+          const res = applyOp(prev, operator, num);
+          if (res === null) { error(); return; }
+          setExpr(`${fmt(prev)} ${operator} ${fmt(num)} =`);
+          current = fmt(res);
+          prev = null; operator = null;
+          justEvaled = true;
+          clearOps();
+          break;
+        }
+        case 'sign': {
+          if (current === '0') break;
+          current = current.startsWith('-') ? current.slice(1) : '-' + current;
+          break;
+        }
+        case 'percent': {
+          const n = parseFloat(current);
+          current = fmt(n / 100);
+          break;
+        }
+        case 'clear': {
+          current = '0'; prev = null; operator = null;
+          justEvaled = false;
+          setExpr('');
+          clearOps();
+          break;
+        }
+      }
+
+      render();
+    });
+
+    // Keyboard support
+    document.addEventListener('keydown', e => {
+      const map = {
+        '0':'0','1':'1','2':'2','3':'3','4':'4',
+        '5':'5','6':'6','7':'7','8':'8','9':'9',
+        '+':'+','-':'−','*':'×','/':'÷',
+        'Enter':'=','=':'=','.':'.','Escape':'c','Backspace':'bs','%':'%'
+      };
+      const k = map[e.key];
+      if (!k) return;
+      e.preventDefault();
+
+      if ('0123456789'.includes(k)) {
+        document.querySelector(`[data-val="${k}"]`)?.click();
+      } else if (['+','−','×','÷'].includes(k)) {
+        document.querySelector(`[data-op="${k}"]`)?.click();
+      } else if (k === '=') {
+        document.querySelector('[data-action="equals"]')?.click();
+      } else if (k === '.') {
+        document.querySelector('[data-action="dot"]')?.click();
+      } else if (k === 'c') {
+        document.querySelector('[data-action="clear"]')?.click();
+      } else if (k === 'bs') {
+        if (current === 'Error' || justEvaled) return;
+        current = current.length > 1 ? current.slice(0,-1) : '0';
+        render();
+      } else if (k === '%') {
+        document.querySelector('[data-action="percent"]')?.click();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
