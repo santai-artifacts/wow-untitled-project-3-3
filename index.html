@@ -181,10 +181,11 @@
     const resultEl = document.getElementById('result');
     const exprEl   = document.getElementById('expression');
 
-    let current   = '0';   // what's shown
-    let prev      = null;  // previous operand
-    let operator  = null;  // pending operator
-    let justEvaled = false;
+    let current          = '0';   // what's shown
+    let prev             = null;  // previous operand
+    let operator         = null;  // pending operator
+    let justEvaled       = false; // true after = (next digit starts fresh)
+    let waitingForOperand = false; // true after op (next digit replaces display, keeps prev/operator)
 
     function fmt(n) {
       const s = parseFloat(n.toPrecision(10)).toString();
@@ -239,6 +240,7 @@
       switch (action) {
         case 'digit': {
           if (justEvaled) { prev = null; operator = null; clearOps(); justEvaled = false; }
+          if (waitingForOperand) { current = val; waitingForOperand = false; break; }
           if (current === '0' || current === '-0') {
             current = (current === '-0' ? '-' : '') + val;
           } else {
@@ -249,29 +251,25 @@
         }
         case 'dot': {
           if (justEvaled) { current = '0'; justEvaled = false; clearOps(); }
+          if (waitingForOperand) { current = '0.'; waitingForOperand = false; break; }
           if (!current.includes('.')) current += '.';
           break;
         }
         case 'op': {
           justEvaled = false;
           const num = parseFloat(current);
-          if (prev !== null && operator) {
+          if (prev !== null && operator && !waitingForOperand) {
             const res = applyOp(prev, operator, num);
             if (res === null) { error(); return; }
             prev = res;
             current = fmt(res);
           } else {
-            prev = num;
+            prev = parseFloat(current);
           }
           operator = op;
           setExpr(`${fmt(prev)} ${op}`);
           highlightOp(op);
-          current = fmt(prev);
-          justEvaled = true; // next digit should replace
-          // allow entering new number
-          justEvaled = false;
-          // actually: after choosing operator, next digit replaces display
-          justEvaled = true;
+          waitingForOperand = true;
           break;
         }
         case 'equals': {
@@ -283,6 +281,7 @@
           current = fmt(res);
           prev = null; operator = null;
           justEvaled = true;
+          waitingForOperand = false;
           clearOps();
           break;
         }
@@ -298,7 +297,7 @@
         }
         case 'clear': {
           current = '0'; prev = null; operator = null;
-          justEvaled = false;
+          justEvaled = false; waitingForOperand = false;
           setExpr('');
           clearOps();
           break;
@@ -331,7 +330,7 @@
       } else if (k === 'c') {
         document.querySelector('[data-action="clear"]')?.click();
       } else if (k === 'bs') {
-        if (current === 'Error' || justEvaled) return;
+        if (current === 'Error' || justEvaled || waitingForOperand) return;
         current = current.length > 1 ? current.slice(0,-1) : '0';
         render();
       } else if (k === '%') {
