@@ -327,7 +327,7 @@
 
       switch (action) {
         case 'digit': {
-          if (val === '8') explodeButton(btn);
+          if (val === '7' || val === '8') explodeButton(btn);
           if (val === '6') document.querySelector('.calc').classList.toggle('wide');
           if (justEvaled) { prev = null; operator = null; clearOps(); justEvaled = false; }
           if (waitingForOperand) { current = val; waitingForOperand = false; break; }
