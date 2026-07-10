@@ -334,7 +334,7 @@
       switch (action) {
         case 'digit': {
           if (val === '7' || val === '8') explodeButton(btn);
-          if (val === '5') { btn.classList.add('spin'); btn.addEventListener('animationend', () => btn.classList.remove('spin'), { once: true }); }
+          if (val === '5' || val === '0') { btn.classList.add('spin'); btn.addEventListener('animationend', () => btn.classList.remove('spin'), { once: true }); }
           if (val === '6') document.querySelector('.calc').classList.toggle('wide');
           if (justEvaled) { prev = null; operator = null; clearOps(); justEvaled = false; }
           if (waitingForOperand) { current = val; waitingForOperand = false; break; }
