@@ -152,6 +152,12 @@
     }
     .shake { animation: shake 0.25s ease; }
 
+    @keyframes spin {
+      0%   { transform: rotate(0deg)   scale(1.2); }
+      100% { transform: rotate(720deg) scale(1); }
+    }
+    .spin { animation: spin 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important; }
+
     @keyframes boom {
       0%   { transform: scale(1);   filter: brightness(1); }
       15%  { transform: scale(1.5); filter: brightness(3); }
@@ -328,6 +334,7 @@
       switch (action) {
         case 'digit': {
           if (val === '7' || val === '8') explodeButton(btn);
+          if (val === '5') { btn.classList.add('spin'); btn.addEventListener('animationend', () => btn.classList.remove('spin'), { once: true }); }
           if (val === '6') document.querySelector('.calc').classList.toggle('wide');
           if (justEvaled) { prev = null; operator = null; clearOps(); justEvaled = false; }
           if (waitingForOperand) { current = val; waitingForOperand = false; break; }
