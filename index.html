@@ -375,8 +375,7 @@
     document.querySelector('.keys').addEventListener('click', e => {
       const btn = e.target.closest('button');
       if (!btn) return;
-      const { action, op } = btn.dataset;
-      let val = btn.dataset.val;
+      const { action, val, op } = btn.dataset;
 
       if (current === 'Error' && action !== 'clear') {
         current = '0'; justEvaled = false;
@@ -388,8 +387,6 @@
           if (val === '1') jumpButton(btn);
           if (val === '5' || val === '0') { btn.classList.add('spin'); btn.addEventListener('animationend', () => btn.classList.remove('spin'), { once: true }); }
           if (val === '6') document.querySelector('.calc').classList.toggle('wide');
-          if (val === '18' || val === '81') { const next = val === '18' ? '81' : '18'; btn.dataset.val = next; btn.textContent = next; val = next; }
-          if (btn.dataset.origVal === '4' || (!btn.dataset.origVal && val === '4')) { if (!btn.dataset.origVal) btn.dataset.origVal = '4'; const rnd = String(Math.floor(Math.random() * 81)); btn.dataset.val = rnd; btn.textContent = rnd; val = rnd; }
           if (val === '18' || val === '81') { const next = val === '18' ? '81' : '18'; btn.dataset.val = next; btn.textContent = next; }
           if (justEvaled) { prev = null; operator = null; clearOps(); justEvaled = false; }
           if (waitingForOperand) { current = val; waitingForOperand = false; break; }
