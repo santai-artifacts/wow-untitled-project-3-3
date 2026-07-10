@@ -387,6 +387,7 @@
           if (val === '1') jumpButton(btn);
           if (val === '5' || val === '0') { btn.classList.add('spin'); btn.addEventListener('animationend', () => btn.classList.remove('spin'), { once: true }); }
           if (val === '6') document.querySelector('.calc').classList.toggle('wide');
+          if (val === '18' || val === '81') { const next = val === '18' ? '81' : '18'; btn.dataset.val = next; btn.textContent = next; }
           if (justEvaled) { prev = null; operator = null; clearOps(); justEvaled = false; }
           if (waitingForOperand) { current = val; waitingForOperand = false; break; }
           if (current === '0' || current === '-0') {
