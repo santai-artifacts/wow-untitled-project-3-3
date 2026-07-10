@@ -45,6 +45,12 @@
       flex-direction: column;
       justify-content: flex-end;
       gap: 6px;
+      transition: min-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .calc.wide .display {
+      min-height: 72px;
+      padding: 14px 28px 10px;
     }
 
     .expression {
@@ -91,10 +97,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.3s ease, color 0.3s ease, transform 0.06s ease;
+      transition: background 0.3s ease, color 0.3s ease, transform 0.06s ease, height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       -webkit-tap-highlight-color: transparent;
       outline: none;
     }
+
+    .calc.wide button { height: 50px; }
+    .calc.wide .btn-sci { height: 36px; }
 
     button:active { transform: scale(0.95); }
 
