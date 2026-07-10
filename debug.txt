@@ -1,12 +1,6 @@
-[2026-07-10T21:53:02.090Z] 🤖 Assistant response | {
-  "messageNum": 9
+[2026-07-10T22:19:12.427Z] === AGENT-RUNNER STARTED === | {
+  "pid": 809,
+  "session_id": "8f8aa9e36be0",
+  "user_id": "lgpHMcv7ecWoeDirF0x0gmwIUGACmBVW"
 }
-[2026-07-10T21:53:03.289Z] 🤖 Assistant response | {
-  "messageNum": 32
-}
-[2026-07-10T21:53:03.324Z] 📨 User message received | {
-  "messageNum": 36
-}
-[2026-07-10T21:53:04.605Z] 🤖 Assistant response | {
-  "messageNum": 42
-}
+[2026-07-10T22:19:12.439Z] Starting SDK query loop
